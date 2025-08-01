@@ -71,4 +71,60 @@ python 1_evaluate_answers.py orqa_run.jsonl
 
 ### ComplexOR
 
-//TODO
+1. Clone the repository Chain-of-Experts
+
+```console
+git clone https://github.com/xzymustbexzy/Chain-of-Experts.git
+```
+
+2. Create a virtual environment inside the directory
+
+```console
+cd Chain-of-Experts
+
+python -m venv venv
+
+source venv/bin/activate
+```
+
+3. The provided code only works for OpenAI models in the standard implementation. But you can modify the code in `Chain-of-Experts/experts/base_expert.py`. You have to exchange (lines 12-15)
+
+```python
+        self.llm = ChatOpenAI(
+            model_name=model,
+            temperature=0
+        )
+```
+
+to
+
+```python
+        self.llm = ChatOpenAI(
+            model_name=model,
+            temperature=0,
+            openai_api_base="$INFERENCE_ENDPOINT/v1",
+            openai_api_key="test",
+        )
+```
+
+Change `$INFERENCE_ENDPOINT` the same way as in ORQA benchmark above
+
+Alternatively, simply take the file from `rl-lp/benchmarks/complex_or/base_expert.py` and replace `$INFERENCE_ENDPOINT`.
+
+4. Install the required packages
+
+```bash
+pip install -r requirements.txt
+
+pip install pulp
+```
+
+5. You can now run the benchmark with after replacing the model:
+
+```bash
+python run_exp.py \
+  --dataset ComplexOR \
+  --problem ".*" \
+  --model "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit" \
+  --algorithm standard
+```
